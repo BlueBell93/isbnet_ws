@@ -8,7 +8,7 @@ docker build -t isbnet:v2 .
 
 Falls sich der Rechner aufgrund begrenzter Ressourcen aufhängt, setze MAX_JOBS Umgebungsvariable
 
-# Date Preprocessing für S3DIS
+# Data Preprocessing für S3DIS
 Erstellen eine Verzeichnisses namens **workspace/dataset/s3dis/** im **isbnet_ws**-Verzeichnis. 
 Die folgenden Dateien werden in dem gerade angelegten Verzeichnis **workspace/dataset/s3dis/** abgelegt. 
 1. Download des S3DIS Datensatzes über dieses [Google Formular](https://docs.google.com/forms/d/e/1FAIpQLScDimvNMCGhy_rmBA2gHfDu3naktRm6A8BPwAWWDv-Uhm6Shw/viewform?c=0&w=1).
@@ -90,7 +90,7 @@ bash prepare_data.sh
 # Inferenz
 Anmerkung: Für die Inferenz muss die **configs/s3dis/isbnet_s3dis_area5.yaml** ggf. angepasst werden (fp16 auf True stellen), falls Probleme wegen geringer GPU Ressourcen auftreten. 
 
-Inferenz mittels vortrainiertes Modell für den S3DIS-Datensatz (Test-Area: Area_5):
+Inferenz mittels vortrainiertem Modell für den S3DIS-Datensatz (Test-Area: Area_5):
 
 ```
 cd /workspace/ISBNet
@@ -99,7 +99,7 @@ python3 tools/test.py configs/s3dis/isbnet_s3dis_area5.yaml dataset/s3dis/head_s
 
 Es gibt weitere config-files für die anderen Test-Areas.
 
-Weiterer Versuch it diesem Befehl:
+Weiterer Versuch mit diesem Befehl:
 ```
 cd /workspace/ISBNet
 python3 tools/test.py configs/s3dis/isbnet_s3dis_area5.yaml /root/workspace/pretrains/s3dis/head_s3dis_area5.pth
@@ -109,6 +109,13 @@ Weiterer Versuch it diesem Befehl:
 ```
 cd /workspace/ISBNet
 python3 tools/test.py configs/s3dis/isbnet_s3dis_area5.yaml /workspace/ISBNet/pretrains/s3dis/head_s3dis_area5.pth
+```
+
+python3 tools/test.py configs/s3dis/isbnet_s3dis_area5.yaml /workspace/ISBNet/pretrains/s3di│/root/workspace/out_own_pretrained_models_all_epochs_latest_model
+s/head_s3dis_area5.pth --out /root/workspace/out_own_pretrained_models_all_epochs_latest_model 
+
+```
+python3 tools/test.py /root/workspace/configs/isbnet_s3dis_area5.yaml todo --out /root/workspace/out/<folder_name>
 ```
 
 # Training

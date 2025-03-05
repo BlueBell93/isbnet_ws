@@ -1,0 +1,8 @@
+# src, configs, models darf nicht in die .gitignore
+# dataset and models and inference results
+dataset/
+out*
+correct_pretrains/
+pretrains/
+pretrains_copy/
+work_dirs/
