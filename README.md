@@ -44,6 +44,7 @@ ebenfalls in dem **workspace/dataset/s3dis/** Ordner ab.
 
 
 2. Ausführen des Docker-Containers
+
 Falls **run_isbnet_container.sh** nicht ausführbar ist:
 ```
 chmod +x run_isbnet_container.sh
@@ -87,11 +88,46 @@ bash prepare_data.sh
 ```
 
 # Inferenz
+Anmerkung: Für die Inferenz muss die **configs/s3dis/isbnet_s3dis_area5.yaml** ggf. angepasst werden (fp16 auf True stellen), falls Probleme wegen geringer GPU Ressourcen auftreten. 
+
 Inferenz mittels vortrainiertes Modell für den S3DIS-Datensatz (Test-Area: Area_5):
 
 ```
 cd /workspace/ISBNet
-python3 tools/test.py configs/s3dis/isbnet_s3dis_area5.yaml dataset/s3dis/head_s3dis_area5.pth --out dataset/s3dis/out
+python3 tools/test.py configs/s3dis/isbnet_s3dis_area5.yaml dataset/s3dis/head_s3dis_area5.pth --out /root/workspace/dataset/s3dis/out
 ```
 
 Es gibt weitere config-files für die anderen Test-Areas.
+
+Weiterer Versuch it diesem Befehl:
+```
+cd /workspace/ISBNet
+python3 tools/test.py configs/s3dis/isbnet_s3dis_area5.yaml /root/workspace/pretrains/s3dis/head_s3dis_area5.pth
+```
+
+Weiterer Versuch it diesem Befehl:
+```
+cd /workspace/ISBNet
+python3 tools/test.py configs/s3dis/isbnet_s3dis_area5.yaml /workspace/ISBNet/pretrains/s3dis/head_s3dis_area5.pth
+```
+
+# Training
+Eigenes Training notwendig, da gegebene Modelle keine sinnvollen Ergebnisse lieferten. Backbone und Gesamtmodell müssen selber trainiert werden. 
+
+Training Backbone (in der configs/s3dis/isbnet_s3dis_area5.yaml muss fp16 auf True gesetzt werden, wenn GPU-Ressourcen nicht ausreichen):
+```
+python3 tools/train.py configs/s3dis/isbnet_backbone_s3dis_area5.yaml --only_backbone  --exp_name default
+```
+
+in /root/workspace/isbnet_s3dis_area5.yaml befindet sich Skript, dass für das Gesamttraining (bei begrenzten GPU Speicher) verwendet werden kann:
+```
+python3 tools/train.py /root/workspace/isbnet_s3dis_area5.yaml --exp_name default
+``` 
+
+# Anmerkungen
+Es gibt für ISBNet zwei Modelle: das Backbone und das Modell selber.
+
+In **~/workspace/workdirs/s3dis** befindet sich das selber trainierte Backbone und die selbst trainierten Modelle (nur Epoche 1 und 2).
+
+In **~/workspace/dataset/s3dis** befindet sich das trainierte Modell. In **~/workspace/pretrains/s3dis** das Backbone. 
+
