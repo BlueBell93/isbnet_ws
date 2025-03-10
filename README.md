@@ -150,13 +150,21 @@ In **~/workspace/workdirs/s3dis** befindet sich das selber trainierte Backbone u
 In **~/workspace/dataset/s3dis** befindet sich das trainierte Modell. In **~/workspace/pretrains/s3dis** das Backbone. 
 
 # From Prediction to Pointcloud with Instance Segmentation
-Setzen des Symlinks:
+Ziel ist, aus den vorhergesagten Masken nun Punktwolken mit Instanzsegmentierung zu generieren.
+
+Setzen der Symlinks:
 ```
 ln -s /root/workspace/src/create_pcd.py /workspace/ISBNet/visualization/
+ln -s /root/workspace/src/create_pcd_multiprocessing.py /workspace/ISBNet/visualization/
 ```
 
-Führe folgenden Befehl zum Erstellen der Punktwolke mit Instanzsegmentierung aus: 
+Führe folgenden Befehl zum Erstellen der Punktwolke mit Instanzsegmentierung aus (mit Multiprocessing): 
+```
+cd /workspace/ISBNet/
+python3 visualization/create_pcd_multiprocessing.py --data_root dataset/s3dis --scene_name area_1_latest --prediction_path /root/workspace/out/s3dis/area_1_latest --task inst_pred
+``` 
 
+Führe folgenden Befehl zum Erstellen der Punktwolke mit Instanzsegmentierung aus (ohne Multiprocessing): 
 ```
 cd /workspace/ISBNet/
 python3 visualization/create_pcd.py --data_root dataset/s3dis --scene_name area_1_latest --prediction_path /root/workspace/out/s3dis/area_1_latest --task inst_pred
