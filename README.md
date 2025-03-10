@@ -88,7 +88,18 @@ bash prepare_data.sh
 ```
 
 # Inferenz
-Anmerkung: Für die Inferenz muss die **configs/s3dis/isbnet_s3dis_area5.yaml** ggf. angepasst werden (fp16 auf True stellen), falls Probleme wegen geringer GPU Ressourcen auftreten. 
+Anmerkung: Für die Inferenz muss die **configs/s3dis/isbnet_s3dis_area5.yaml** ggf. angepasst werden (fp16 auf True stellen), falls Probleme wegen geringer GPU Ressourcen auftreten. Für die Inferenz und das Training wurde die angepasste config-file in **workspace/configs/isbnet_s3dis_area5.yaml** verwendet. 
+Die Ergebnisse der Inferenz werden im Ordner **workspace/out/s3dis/area_5_latest** gespeichert, wenn folgender Befehl ausgeführt wird (hierfür muss die Ordnerstruktur out/s3dis/area_5_latest selber angelegt werden): 
+
+```
+python3 tools/test.py /root/workspace/configs/isbnet_s3dis_area5.yaml /root/workspace/models/s3dis/head_s3dis_area5.pth --out /root/workspace/out/s3dis/area_5_latest
+```  
+oder 
+```
+python3 tools/test.py /root/workspace/configs/isbnet_s3dis_area5.yaml /root/workspace/models/s3dis/latest.pth --out /root/workspace/out/s3dis/area_5_latest
+```  
+
+
 
 Inferenz mittels vortrainiertem Modell für den S3DIS-Datensatz (Test-Area: Area_5):
 
@@ -115,7 +126,7 @@ python3 tools/test.py configs/s3dis/isbnet_s3dis_area5.yaml /workspace/ISBNet/pr
 s/head_s3dis_area5.pth --out /root/workspace/out_own_pretrained_models_all_epochs_latest_model 
 
 ```
-python3 tools/test.py /root/workspace/configs/isbnet_s3dis_area5.yaml todo --out /root/workspace/out/<folder_name>
+python3 tools/test.py /root/workspace/configs/isbnet_s3dis_area5.yaml /root/workspace/models/s3dis/head_s3dis_area5.pth --out /root/workspace/out/s3dis/area_1
 ```
 
 # Training
@@ -126,9 +137,9 @@ Training Backbone (in der configs/s3dis/isbnet_s3dis_area5.yaml muss fp16 auf Tr
 python3 tools/train.py configs/s3dis/isbnet_backbone_s3dis_area5.yaml --only_backbone  --exp_name default
 ```
 
-in /root/workspace/isbnet_s3dis_area5.yaml befindet sich Skript, dass für das Gesamttraining (bei begrenzten GPU Speicher) verwendet werden kann:
+in /root/workspace/configs/isbnet_s3dis_area5.yaml befindet sich Skript, dass für das Gesamttraining (bei begrenzten GPU Speicher) verwendet werden kann:
 ```
-python3 tools/train.py /root/workspace/isbnet_s3dis_area5.yaml --exp_name default
+python3 tools/train.py /root/workspace/configs/isbnet_s3dis_area5.yaml --exp_name default
 ``` 
 
 # Anmerkungen
@@ -137,4 +148,19 @@ Es gibt für ISBNet zwei Modelle: das Backbone und das Modell selber.
 In **~/workspace/workdirs/s3dis** befindet sich das selber trainierte Backbone und die selbst trainierten Modelle (nur Epoche 1 und 2).
 
 In **~/workspace/dataset/s3dis** befindet sich das trainierte Modell. In **~/workspace/pretrains/s3dis** das Backbone. 
+
+# From Prediction to Pointcloud with Instance Segmentation
+Setzen des Symlinks:
+```
+ln -s /root/workspace/src/create_pcd.py /workspace/ISBNet/visualization/
+```
+
+Führe folgenden Befehl zum Erstellen der Punktwolke mit Instanzsegmentierung aus: 
+
+```
+cd /workspace/ISBNet/
+python3 visualization/create_pcd.py --data_root dataset/s3dis --scene_name area_1_latest --prediction_path /root/workspace/out/s3dis/area_1_latest --task inst_pred
+``` 
+
+Das Ergebnis wird als txt-Datei gespeichert. Dabei repräsentiert jede Zeile einen Punkt der Punktwolke (x y z r g b semantischer Label Instanzlabel). Wenn ein Instanzlabel das Label *-100* hat, dann wurde dem Punkt keine Instanz zugeordnet. Das Ergebnis kann als numpy-Array geladen werden, d.h. alle Werte liegen als float-Werte vor. Daher müssen die Labels zu einem int gecastet werden. Erklärung für die semantischen labels:  2: ceiling, 3: floor, 4: wall, 5: beam, 6:column, 7:window, 8:door, 9:chair, 10: table, 11:bookcase, 12:sofa, 13:board, 14:clutter.
 
