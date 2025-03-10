@@ -73,7 +73,7 @@ def main():
     parser = argparse.ArgumentParser("S3DIS-Vis")
 
     parser.add_argument("--data_root", type=str, default="dataset/s3dis")
-    parser.add_argument("--scene_name", type=str, default="Area_5_office_30")
+    parser.add_argument("--scene_name", type=str, default="area_1_latest")
     parser.add_argument("--split", type=str, default="preprocess")
     parser.add_argument(
         "--prediction_path", help="path to the prediction results", default="/root/workspace/results/isbnet_scannetv2_val"
@@ -100,6 +100,7 @@ def main():
     # print(f"scene_names: {scene_names}")
     # print(f"len(scene_names): {len(scene_names)}")
     # return
+    current_area = args.scene_name
 
     for scene_name in scene_names:
         print(f"Creating pointcloud for scene {scene_name}.")
@@ -147,8 +148,9 @@ def main():
             pred_inst_label = pred_inst_label.reshape(len(pred_inst_label), 1)
             pcd = np.concatenate((xyz, rgb, pred_sem_label, pred_inst_label), axis=1)
             # save results
-            Path("/root/workspace/results/pointcloud_data").mkdir(parents=True, exist_ok=True)
-            pcd_save_path = Path("/root/workspace/results/pointcloud_data") / f"{args.scene_name}.txt"
+            dir_name = Path("/root/workspace/results") / current_area
+            dir_name.mkdir(parents=True, exist_ok=True)
+            pcd_save_path = dir_name / f"{scene_name}.txt"
             np.savetxt(pcd_save_path, pcd)
             print(f"Saved scene {args.scene_name} to {pcd_save_path}.")
 
